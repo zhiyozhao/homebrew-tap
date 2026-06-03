@@ -9,6 +9,7 @@ cask "bongocat-menubar" do
 
   preflight do
     system_command "/usr/bin/pkill", args: ["-x", "BongoCat Menubar"]
+    system_command "/usr/bin/tccutil", args: ["reset", "Accessibility", "com.zhiyozhao.bongocat-menubar"]
   end
 
   app "BongoCat Menubar.app"
