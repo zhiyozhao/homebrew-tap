@@ -7,6 +7,10 @@ cask "bongocat-menubar" do
   desc "Menu bar Bongo Cat that types along with you"
   homepage "https://github.com/zhiyozhao/bongocat-menubar"
 
+  preflight do
+    system_command "/usr/bin/pkill", args: ["-x", "BongoCat Menubar"]
+  end
+
   app "BongoCat Menubar.app"
 
   postflight do
@@ -14,7 +18,7 @@ cask "bongocat-menubar" do
                    args: ["-cr", "#{appdir}/BongoCat Menubar.app"]
   end
 
-  zap trash: [
-    "~/Library/Application Support/BongoCat Menubar",
-  ]
+  caveats do
+    unsigned_accessibility
+  end
 end
