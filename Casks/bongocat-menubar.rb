@@ -8,7 +8,7 @@ cask "bongocat-menubar" do
   homepage "https://github.com/zhiyozhao/bongocat-menubar"
 
   preflight do
-    system_command "/usr/bin/pkill", args: ["-x", "BongoCat Menubar"]
+    system_command "/usr/bin/pkill", args: ["-x", "BongoCat Menubar"], must_succeed: false
     system_command "/usr/bin/tccutil", args: ["reset", "Accessibility", "com.zhiyozhao.bongocat-menubar"]
   end
 
