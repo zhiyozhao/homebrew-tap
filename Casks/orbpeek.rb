@@ -1,6 +1,6 @@
 cask "orbpeek" do
-  version "1.1.0"
-  sha256 "8e604ff840ba2d09feeee11c79ebdd5de7a64bee5aaf4dff13cf54b8a39f936c"
+  version "1.1.1"
+  sha256 "39a6df58832fd6e6938e89bc1c4b1d282dc1739a4480edd22a44d3ca34025bf6"
 
   url "https://github.com/zhiyozhao/OrbPeek/releases/download/v#{version}/OrbPeek-#{version}.dmg"
   name "OrbPeek"
