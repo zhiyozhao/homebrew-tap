@@ -1,0 +1,62 @@
+name: sync casks
+
+# Keeps every cask in this tap pointed at the latest GitHub release of its
+# upstream repo (the repo is parsed out of each cask's url). Runs on a
+# schedule so no token sharing with upstream repos is needed.
+
+on:
+  schedule:
+    - cron: "7 */6 * * *"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  sync:
+    runs-on: macos-15
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Bump outdated casks
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          set -uo pipefail
+          changed=0
+          for cask in Casks/*.rb; do
+            name="$(basename "$cask" .rb)"
+            repo="$(sed -nE 's|.*url "https://github.com/([^/]+/[^/]+)/releases/.*|\1|p' "$cask" | head -1)"
+            [ -n "$repo" ] || { echo "== $name: no github release url, skipping"; continue; }
+            current="$(sed -nE 's/.*version "([^"]+)".*/\1/p' "$cask" | head -1)"
+            tag="$(gh release view --repo "$repo" --json tagName -q .tagName 2>/dev/null)"
+            [ -n "$tag" ] || { echo "== $name: no release in $repo, skipping"; continue; }
+            latest="${tag#v}"
+            if [ "$current" = "$latest" ]; then
+              echo "== $name: up to date ($current)"
+              continue
+            fi
+            url="$(sed -nE 's/.*url "([^"]+)".*/\1/p' "$cask" | head -1 | sed "s/#{version}/$latest/g")"
+            asset="/tmp/$name.asset"
+            curl -sfL "$url" -o "$asset" || { echo "== $name: download failed ($url), skipping"; continue; }
+            sha="$(shasum -a 256 "$asset" | cut -d' ' -f1)"
+            rm -f "$asset"
+            sed -i '' \
+              -e "s/version \"$current\"/version \"$latest\"/" \
+              -e "s/sha256 \"[0-9a-f]\{64\}\"/sha256 \"$sha\"/" \
+              "$cask"
+            echo "== $name: $current -> $latest"
+            echo "$name $latest" >> /tmp/bumped.txt
+            changed=1
+          done
+          exit 0
+
+      - name: Commit and push
+        run: |
+          set -euo pipefail
+          [ -f /tmp/bumped.txt ] || { echo "nothing to bump"; exit 0; }
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add Casks
+          git commit -m "bump: $(paste -sd', ' /tmp/bumped.txt | sed 's/ /  /g')"
+          git push
