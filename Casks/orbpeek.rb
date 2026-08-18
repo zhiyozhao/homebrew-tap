@@ -7,7 +7,7 @@ cask "orbpeek" do
   desc "Dock windows to any screen edge and slide them back in on hover"
   homepage "https://github.com/zhiyozhao/OrbPeek"
 
-  depends_on macos: ">= :sonoma"
+  depends_on macos: :sonoma
 
   # A running menu-bar agent; quit it before replacing the app.
   preflight do
