@@ -24,9 +24,5 @@ cask "minibrowser" do
                    must_succeed: false
   end
 
-  caveats do
-    unsigned_accessibility
-  end
-
   zap trash: "~/Library/Preferences/com.zhao.minibrowser.plist"
 end
