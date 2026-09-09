@@ -8,14 +8,13 @@ cask "bongocat-menubar" do
   homepage "https://github.com/zhiyozhao/bongocat-menubar"
 
   preflight_steps do
-    system_command "/usr/bin/pkill", args: ["-x", "BongoCat Menubar"], must_succeed: false
+    terminate_process "BongoCat Menubar"
   end
 
   app "BongoCat Menubar.app"
 
   postflight_steps do
-    system_command "/usr/bin/xattr",
-                   args: ["-cr", "#{appdir}/BongoCat Menubar.app"]
+    run "/usr/bin/xattr", args: ["-cr", "{{appdir}}/BongoCat Menubar.app"], must_succeed: false
   end
 
   caveats do

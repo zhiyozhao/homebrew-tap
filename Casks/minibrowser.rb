@@ -10,7 +10,7 @@ cask "minibrowser" do
   depends_on macos: :ventura
 
   preflight_steps do
-    system_command "/usr/bin/pkill", args: ["-x", "MiniBrowser"], must_succeed: false
+    terminate_process "MiniBrowser"
   end
 
   app "MiniBrowser.app"
@@ -19,9 +19,9 @@ cask "minibrowser" do
   # without the Gatekeeper dance. Stable signing identity keeps
   # TCC grants across updates.
   postflight_steps do
-    system_command "/usr/bin/xattr",
-                   args: ["-dr", "com.apple.quarantine", "#{appdir}/MiniBrowser.app"],
-                   must_succeed: false
+    run "/usr/bin/xattr",
+        args: ["-dr", "com.apple.quarantine", "{{appdir}}/MiniBrowser.app"],
+        must_succeed: false
   end
 
   zap trash: "~/Library/Preferences/com.zhao.minibrowser.plist"

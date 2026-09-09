@@ -11,7 +11,7 @@ cask "orbpeek" do
 
   # A running menu-bar agent; quit it before replacing the app.
   preflight_steps do
-    system_command "/usr/bin/pkill", args: ["-x", "OrbPeek"], must_succeed: false
+    terminate_process "OrbPeek"
   end
 
   app "OrbPeek.app"
@@ -21,9 +21,9 @@ cask "orbpeek" do
   # grants survive updates because every build is signed with the same
   # stable certificate.
   postflight_steps do
-    system_command "/usr/bin/xattr",
-                   args: ["-dr", "com.apple.quarantine", "#{appdir}/OrbPeek.app"],
-                   must_succeed: false
+    run "/usr/bin/xattr",
+        args: ["-dr", "com.apple.quarantine", "{{appdir}}/OrbPeek.app"],
+        must_succeed: false
   end
 
   caveats do
