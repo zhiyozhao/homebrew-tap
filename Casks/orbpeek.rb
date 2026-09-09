@@ -10,7 +10,7 @@ cask "orbpeek" do
   depends_on macos: :sonoma
 
   # A running menu-bar agent; quit it before replacing the app.
-  preflight do
+  preflight_steps do
     system_command "/usr/bin/pkill", args: ["-x", "OrbPeek"], must_succeed: false
   end
 
@@ -20,7 +20,7 @@ cask "orbpeek" do
   # opens without the Gatekeeper dance. Accessibility and Screen Recording
   # grants survive updates because every build is signed with the same
   # stable certificate.
-  postflight do
+  postflight_steps do
     system_command "/usr/bin/xattr",
                    args: ["-dr", "com.apple.quarantine", "#{appdir}/OrbPeek.app"],
                    must_succeed: false

@@ -9,7 +9,7 @@ cask "menumew" do
 
   app "MenuMew.app"
 
-  postflight do
+  postflight_steps do
     system_command "/usr/bin/xattr",
                    args: ["-cr", "#{appdir}/MenuMew.app"]
   end

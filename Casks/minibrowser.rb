@@ -9,7 +9,7 @@ cask "minibrowser" do
 
   depends_on macos: :ventura
 
-  preflight do
+  preflight_steps do
     system_command "/usr/bin/pkill", args: ["-x", "MiniBrowser"], must_succeed: false
   end
 
@@ -18,7 +18,7 @@ cask "minibrowser" do
   # Self-signed, not notarized: strip quarantine so the app opens
   # without the Gatekeeper dance. Stable signing identity keeps
   # TCC grants across updates.
-  postflight do
+  postflight_steps do
     system_command "/usr/bin/xattr",
                    args: ["-dr", "com.apple.quarantine", "#{appdir}/MiniBrowser.app"],
                    must_succeed: false
