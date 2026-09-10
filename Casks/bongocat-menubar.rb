@@ -1,6 +1,6 @@
 cask "bongocat-menubar" do
-  version "1.0.1"
-  sha256 "0ed2d36e295a27ed95ba087baf705727c1a5f9617ff405f354a3e0c43a912729"
+  version "1.0.2"
+  sha256 "ee8f9e4aea621e1b681dead64c32b6a85a318b2810b3d52ce2bb0fe48a48b928"
 
   url "https://github.com/zhiyozhao/bongocat-menubar/releases/download/v#{version}/BongoCat-Menubar-v#{version}.dmg"
   name "BongoCat Menubar"
