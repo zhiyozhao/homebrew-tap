@@ -1,6 +1,6 @@
 cask "minibrowser" do
-  version "1.0.0"
-  sha256 "5d4ad73a7aa5c81d6fcd8e02b1b1a21bdd9fb8114755fda4e3f1b7c7c6ae0b21"
+  version "1.0.1"
+  sha256 "925927b40ff5e1ccd504e915463e5fd3d6df19e7117e8a4a3e34bd32101341e1"
 
   url "https://github.com/zhiyozhao/MiniBrowser/releases/download/v#{version}/MiniBrowser-#{version}.dmg"
   name "MiniBrowser"
