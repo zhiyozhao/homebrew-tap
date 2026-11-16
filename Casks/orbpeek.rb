@@ -33,5 +33,7 @@ cask "orbpeek" do
   zap trash: [
     "~/Library/Logs/orbpeek.log",
     "~/Library/Preferences/com.orbpeek.OrbPeek.plist",
+    "~/Library/Application Support/OrbPeek",
+    "~/.config/orbpeek",
   ]
 end
