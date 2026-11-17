@@ -24,5 +24,10 @@ cask "minibrowser" do
         must_succeed: false
   end
 
-  zap trash: "~/Library/Preferences/com.zhao.minibrowser.plist"
+  zap trash: [
+    "~/Library/Preferences/com.zhao.minibrowser.plist",
+    "~/Library/WebKit/com.zhao.minibrowser",
+    "~/Library/Caches/com.zhao.minibrowser",
+    "~/Library/HTTPStorages/com.zhao.minibrowser*",
+  ]
 end
