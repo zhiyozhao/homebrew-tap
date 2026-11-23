@@ -1,9 +1,11 @@
-# Copy to the tap's .github/workflows/ together with the formula-update helpers.
 name: Sync fzfp formula
 on:
-  schedule:
-    - cron: '37 * * * *'
   workflow_dispatch:
+    inputs:
+      dry_run:
+        description: Verify the latest release without changing the formula
+        type: boolean
+        default: false
 permissions:
   contents: write
 concurrency:
@@ -18,6 +20,8 @@ jobs:
       HOMEBREW_NO_ANALYTICS: 1
     steps:
       - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+      - name: Test formula updater
+        run: ruby scripts/fzfp/test-update.rb
       - name: Make Homebrew audit the checked-out tap
         shell: bash
         run: |
@@ -27,6 +31,8 @@ jobs:
           ln -s "$GITHUB_WORKSPACE" "$tap_dir/homebrew-tap"
       - name: Download and verify released assets, then render formula
         shell: bash
+        env:
+          DRY_RUN: ${{ inputs.dry_run }}
         run: |
           set -euo pipefail
           repo=zhiyozhao/fzf-pinyin
@@ -36,12 +42,19 @@ jobs:
           trap 'rm -rf "$work"' EXIT
           gh release download "$tag" --repo "$repo" --dir "$work" \
             --pattern checksums.txt --pattern 'fzfp-*.tar.gz'
-          ruby scripts/fzfp/update.rb "$tag" "$work" Formula/fzfp.rb
+          ruby scripts/fzfp/update.rb "$tag" "$work" "$work/fzfp.rb"
+          if [ "$DRY_RUN" = true ]; then
+            cmp Formula/fzfp.rb "$work/fzfp.rb"
+            echo 'Dry run: all four release checksums verified; formula is unchanged'
+            exit 0
+          fi
+          cp "$work/fzfp.rb" Formula/fzfp.rb
           brew style Formula/fzfp.rb
           # Trust only this verified formula in the disposable CI runner.
           brew trust --formula zhiyozhao/tap/fzfp
           brew audit --new --formula zhiyozhao/tap/fzfp
       - name: Commit only the formula
+        if: inputs.dry_run != true
         run: |
           if git diff --quiet -- Formula/fzfp.rb; then exit 0; fi
           git config user.name 'github-actions[bot]'
