@@ -34,8 +34,6 @@ jobs:
           [[ "$tag" =~ ^fzfp-v[0-9]+\.[0-9]+\.[0-9]+$ ]]
           work=$(mktemp -d)
           trap 'rm -rf "$work"' EXIT
-          # 0.1.0 predates binary assets; leave the existing formula unchanged.
-          if [ "$tag" = fzfp-v0.1.0 ]; then exit 0; fi
           gh release download "$tag" --repo "$repo" --dir "$work" \
             --pattern checksums.txt --pattern 'fzfp-*.tar.gz'
           ruby scripts/fzfp/update.rb "$tag" "$work" Formula/fzfp.rb
