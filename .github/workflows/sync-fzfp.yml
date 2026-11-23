@@ -1,0 +1,52 @@
+# Copy to the tap's .github/workflows/ together with the formula-update helpers.
+name: Sync fzfp formula
+on:
+  schedule:
+    - cron: '37 * * * *'
+  workflow_dispatch:
+permissions:
+  contents: write
+concurrency:
+  group: sync-fzfp-formula
+  cancel-in-progress: false
+jobs:
+  sync:
+    runs-on: macos-15
+    env:
+      GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      HOMEBREW_NO_AUTO_UPDATE: 1
+      HOMEBREW_NO_ANALYTICS: 1
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+      - name: Make Homebrew audit the checked-out tap
+        shell: bash
+        run: |
+          tap_dir="$(brew --repository)/Library/Taps/zhiyozhao"
+          mkdir -p "$tap_dir"
+          test ! -e "$tap_dir/homebrew-tap"
+          ln -s "$GITHUB_WORKSPACE" "$tap_dir/homebrew-tap"
+      - name: Download and verify released assets, then render formula
+        shell: bash
+        run: |
+          set -euo pipefail
+          repo=zhiyozhao/fzf-pinyin
+          tag=$(gh release view --repo "$repo" --json tagName --jq .tagName)
+          [[ "$tag" =~ ^fzfp-v[0-9]+\.[0-9]+\.[0-9]+$ ]]
+          work=$(mktemp -d)
+          trap 'rm -rf "$work"' EXIT
+          # 0.1.0 predates binary assets; leave the existing formula unchanged.
+          if [ "$tag" = fzfp-v0.1.0 ]; then exit 0; fi
+          gh release download "$tag" --repo "$repo" --dir "$work" \
+            --pattern checksums.txt --pattern 'fzfp-*.tar.gz'
+          ruby scripts/fzfp/update.rb "$tag" "$work" Formula/fzfp.rb
+          brew style Formula/fzfp.rb
+          brew audit --new --formula zhiyozhao/tap/fzfp
+      - name: Commit only the formula
+        run: |
+          if git diff --quiet -- Formula/fzfp.rb; then exit 0; fi
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add Formula/fzfp.rb
+          git commit -m 'Update fzfp binary release'
+          git pull --rebase origin main
+          git push origin HEAD:main
