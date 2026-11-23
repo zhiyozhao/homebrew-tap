@@ -40,6 +40,8 @@ jobs:
             --pattern checksums.txt --pattern 'fzfp-*.tar.gz'
           ruby scripts/fzfp/update.rb "$tag" "$work" Formula/fzfp.rb
           brew style Formula/fzfp.rb
+          # Trust only this verified formula in the disposable CI runner.
+          brew trust --formula zhiyozhao/tap/fzfp
           brew audit --new --formula zhiyozhao/tap/fzfp
       - name: Commit only the formula
         run: |
