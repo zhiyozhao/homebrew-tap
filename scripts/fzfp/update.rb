@@ -48,6 +48,7 @@ if $PROGRAM_NAME == __FILE__
   # Validate everything before replacing an existing formula.
   Tempfile.create(['fzfp', '.rb'], File.dirname(output)) do |file|
     file.write(content)
+    file.chmod(0o644)
     file.close
     File.rename(file.path, output)
   end
