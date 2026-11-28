@@ -30,6 +30,10 @@ jobs:
       FZF_DEFAULT_OPTS: ''
       FZF_DEFAULT_OPTS_FILE: /dev/null
     steps:
+      - uses: actions/setup-go@d8cbb8045d7f43706b9177cceb36c1f91a6644d5 # v7
+        with:
+          go-version: '1.27.4'
+          cache: false
       - name: Verify and execute the published native archive
         shell: bash
         run: |
