@@ -7,7 +7,7 @@ require 'tempfile'
 module FzfpFormula
   PLATFORMS = %w[darwin_arm64 darwin_amd64 linux_arm64 linux_amd64].freeze
 
-  def self.render(tag, directory)
+  def self.render(tag, directory, template: File.read(File.join(__dir__, 'fzfp.rb')))
     raise 'Invalid release tag' unless /\Afzfp-v\d+\.\d+\.\d+\z/.match?(tag)
 
     version = tag.delete_prefix('fzfp-v')
@@ -27,13 +27,10 @@ module FzfpFormula
 
       sum
     end
-    formula = File.read(File.join(__dir__, 'fzfp.rb'))
-    formula = formula.sub(/^# Draft:.*\n/, '')
-    template_version = formula[/^  version "([^"]+)"$/, 1]
-    raise 'Missing template version' unless template_version
+    formula = template.sub(/^# Draft:.*\n/, '')
+    raise 'Missing template version placeholder' unless formula.match?(/^  version "__VERSION__"$/)
 
-    # The template uses this version only in version/asset URLs; revisit if adding other versioned text.
-    formula = formula.gsub(template_version, version)
+    formula = formula.gsub('__VERSION__', version)
     hashes.each { |sum| formula = formula.sub('0' * 64, sum) }
     raise 'Unfilled formula' if formula.include?('0' * 64)
 
