@@ -1,0 +1,56 @@
+name: Verify published fzfp binaries
+on:
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: Published fzfp CLI release tag
+        required: true
+        default: fzfp-v0.2.1
+permissions:
+  contents: read
+jobs:
+  native:
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - runner: macos-15
+            platform: darwin_arm64
+          - runner: macos-15-intel
+            platform: darwin_amd64
+          - runner: ubuntu-24.04
+            platform: linux_amd64
+          - runner: ubuntu-24.04-arm
+            platform: linux_arm64
+    runs-on: ${{ matrix.runner }}
+    env:
+      GH_TOKEN: ${{ github.token }}
+      FZFP_RELEASE_TAG: ${{ inputs.tag }}
+      FZFP_PLATFORM: ${{ matrix.platform }}
+      FZF_DEFAULT_OPTS: ''
+      FZF_DEFAULT_OPTS_FILE: /dev/null
+    steps:
+      - name: Verify and execute the published native archive
+        shell: bash
+        run: |
+          set -euo pipefail
+          [[ "$FZFP_RELEASE_TAG" =~ ^fzfp-v[0-9]+\.[0-9]+\.[0-9]+$ ]]
+          version="${FZFP_RELEASE_TAG#fzfp-v}"
+          work="$(mktemp -d)"
+          trap 'rm -r "$work"' EXIT
+          archive="fzfp-$version-$FZFP_PLATFORM.tar.gz"
+          gh release download "$FZFP_RELEASE_TAG" --repo zhiyozhao/fzf-pinyin --dir "$work" \
+            --pattern checksums.txt --pattern "$archive"
+          cd "$work"
+          grep " $archive\$" checksums.txt | shasum -a 256 -c -
+          # Reuse the reviewed tag's strict root/epoch/five-file and strings checks.
+          for script in verify-archive-metadata.go verify-binary.sh; do
+            gh api -H 'Accept: application/vnd.github.raw+json' \
+              "repos/zhiyozhao/fzf-pinyin/contents/scripts/$script?ref=$FZFP_RELEASE_TAG" > "$script"
+          done
+          go run verify-archive-metadata.go "$archive"
+          tar -xzf "$archive"
+          test "$(./fzfp --version)" = "fzfp $version (based on fzf 0.75)"
+          test "$(printf '北京\n上海\n' | ./fzfp --filter=bj)" = 北京
+          sh verify-binary.sh "$work/fzfp" "${FZFP_PLATFORM%_*}" "${FZFP_PLATFORM#*_}"
+          ./fzfp --version
