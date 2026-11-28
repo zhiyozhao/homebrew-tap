@@ -4,28 +4,28 @@
 class Fzfp < Formula
   desc "Fuzzy finder with Mandarin pinyin matching"
   homepage "https://github.com/zhiyozhao/fzf-pinyin"
-  version "0.1.0"
+  version "0.2.0"
   license "MIT"
 
   on_macos do
     on_arm do
-      url "https://github.com/zhiyozhao/fzf-pinyin/releases/download/fzfp-v0.1.0/fzfp-0.1.0-darwin_arm64.tar.gz"
-      sha256 "da9d7a485125aa68b297860ca90a25f55ec593f548abe36178b5228fe44d4c13"
+      url "https://github.com/zhiyozhao/fzf-pinyin/releases/download/fzfp-v0.2.0/fzfp-0.2.0-darwin_arm64.tar.gz"
+      sha256 "30f539e390fd54dd6ff0e8f619072b8b6accdda47ca9098505f41169aa277184"
     end
     on_intel do
-      url "https://github.com/zhiyozhao/fzf-pinyin/releases/download/fzfp-v0.1.0/fzfp-0.1.0-darwin_amd64.tar.gz"
-      sha256 "02c98720d9cc048cd534896e7f09d1b72976b7d4811c9ad4ba5811be0d10a74c"
+      url "https://github.com/zhiyozhao/fzf-pinyin/releases/download/fzfp-v0.2.0/fzfp-0.2.0-darwin_amd64.tar.gz"
+      sha256 "6901f05f07db9a2c29cd263df544d6d1c577c99ec25db27890dc30aa742face2"
     end
   end
 
   on_linux do
     on_arm do
-      url "https://github.com/zhiyozhao/fzf-pinyin/releases/download/fzfp-v0.1.0/fzfp-0.1.0-linux_arm64.tar.gz"
-      sha256 "6338b1e3366f13a417fe1f23aef834ebfe5363e123006ebe53801a123df24eea"
+      url "https://github.com/zhiyozhao/fzf-pinyin/releases/download/fzfp-v0.2.0/fzfp-0.2.0-linux_arm64.tar.gz"
+      sha256 "a9b3b1b0f877e2f792202f9d4f63a81963566803e79f0e31d4a933b97fe0037e"
     end
     on_intel do
-      url "https://github.com/zhiyozhao/fzf-pinyin/releases/download/fzfp-v0.1.0/fzfp-0.1.0-linux_amd64.tar.gz"
-      sha256 "23309041ff737f3a2eaed2a210e9d7032d54acb24c34fc6aa8e0ae6b5b92f05a"
+      url "https://github.com/zhiyozhao/fzf-pinyin/releases/download/fzfp-v0.2.0/fzfp-0.2.0-linux_amd64.tar.gz"
+      sha256 "f83d7a1ea2736e38f12698cdc439bb0092a46d4ffc322e6fc4c703ecdfa5b627"
     end
   end
 
